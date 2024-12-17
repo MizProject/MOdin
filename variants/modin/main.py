@@ -267,11 +267,11 @@ class MainWindow(QMainWindow):
                 QMessageBox.critical(self,
                                      "Odin4 is not located",
                                      f"Odin4 was not found\n\nYou point to {odin_path} but it does not exist or the python script is having an issue",
-                                     QMessageBox.Ok)
+                                     QMessageBox.StandardButton.Close)
             QMessageBox.critical(self,
                                  'Odin4 exec is empty',
                                  "Check the Configure tab and set the odin4 Binary",
-                                 QMessageBox.Ok)
+                                 QMessageBox.StandardButton.Close)
             self.btn_diag.start(8000)
             self.usb_timer.start(5000)
             return
