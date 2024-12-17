@@ -19,7 +19,7 @@ while true; do
             case $STR in
                 "Arch Linux")
                     echo "Arch Detected, installing"
-                    sudo pacman -S --noconfirm python python-pyqt6
+                    sudo pacman -S --noconfirm python python-pyqt6 python-pyusb
                     if [ -e "/usr/bin/paru" ]; then
                         paru -S --noconfirm odin4-cli
                     elif [ -e "/usr/bin/yay" ]; then
@@ -104,4 +104,4 @@ while true; do
     esac
 done
 
-            
+echo -e "REMEBER\n\n\n\nPlease run modin to the terminal to run modin"  
