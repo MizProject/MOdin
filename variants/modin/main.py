@@ -81,6 +81,7 @@ class MainWindow(QMainWindow):
         BTNStat_Layout.addWidget(self.statBTN)
         tab1_layout.addLayout(BTNStat_Layout)
         tab1_layout.addWidget(self.box)
+        
         # BTN
         self.btn_diag = QTimer(self)
         self.btn_diag.timeout.connect(self.reset_BTNDIAG)
@@ -176,7 +177,10 @@ class MainWindow(QMainWindow):
         v2.addLayout(UDATALayout)
         v2.addWidget(self.flashbtn)
 
-
+        # Start checking for USB devices periodically
+        self.usb_timer = QTimer(self)
+        self.usb_timer.timeout.connect(self.check_usb_devices)
+        self.usb_timer.start(5000)  # Check every 5 seconds
 
         self.show()
 
@@ -189,10 +193,7 @@ class MainWindow(QMainWindow):
 
 
 
-        # Start checking for USB devices periodically
-        self.usb_timer = QTimer(self)
-        self.usb_timer.timeout.connect(self.check_usb_devices)
-        self.usb_timer.start(5000)  # Check every 5 seconds
+
 
     def reset_BTNDIAG(self):
         pick = random.choice(['1', '2', '3', '4'])
@@ -223,7 +224,7 @@ class MainWindow(QMainWindow):
                 }
             """)
         elif pick == '3':
-            self.statBTN.setText("Eepy(zzz) - SCAMSUNG")
+            self.statBTN.setText("Eepy(zzz) - This software is in Alpha stage so expect things break here often")
             self.statBTN.setStyleSheet("""
                 QPushButton {
                     color: black;
