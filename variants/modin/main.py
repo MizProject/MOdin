@@ -394,7 +394,7 @@ class AboutWindow(QMainWindow):
         self.image_label = None
 
         # Contents
-        self.image = QPixmap('/home/navia/Documents/MOdin/variants/modin/ico.png')
+        self.image = QPixmap('/usr/share/icons/hicolor/scalable/apps/modin.png')
         if not self.image.isNull():
             processed_image = self.image.scaled(80, 80, Qt.AspectRatioMode.KeepAspectRatio)
             self.image_label = QLabel()
