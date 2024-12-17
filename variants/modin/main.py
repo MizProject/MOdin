@@ -263,18 +263,38 @@ class MainWindow(QMainWindow):
 
         odin_path = self.where_odin_box.text()
         if not odin_path:
-            if not os.path.exists(odin_path):
-                QMessageBox.critical(self,
-                                     "Odin4 is not located",
-                                     f"Odin4 was not found\n\nYou point to {odin_path} but it does not exist or the python script is having an issue",
-                                     QMessageBox.StandardButton.Close)
             QMessageBox.critical(self,
-                                 'Odin4 exec is empty',
-                                 "Check the Configure tab and set the odin4 Binary",
+                                 "Odin4 Exec is empty",
+                                 "Please fill up the exec path",
                                  QMessageBox.StandardButton.Close)
             self.btn_diag.start(8000)
             self.usb_timer.start(5000)
             return
+        if not os.path.basename(odin_path) == "odin4":
+            QMessageBox.critical(self,
+                "Are you sure thats odin4?",
+                f"Due to strict measures, this {os.path.basename(odin_path)} from {odin_path} will not be accepted because it may not be odin4\n\nAlthough i'm sure you can fool this tool",
+                QMessageBox.StandardButton.Close)
+            self.btn_diag.start(8000)
+            self.usb_timer.start(5000)
+            return
+        if not os.path.exists(odin_path):
+            QMessageBox.critical(self,
+                "Odin4 is not located",
+                f"Odin4 was not found\n\nYou point to {odin_path} but it does not exist or the python script is having an issue",
+                QMessageBox.StandardButton.Close)
+            self.btn_diag.start(8000)
+            self.usb_timer.start(5000)
+            return
+        if not os.path.isfile(odin_path):
+            QMessageBox.critical(self,
+                "Odin4 error",
+                f"{odin_path} is invalid",
+                QMessageBox.StandardButton.Close)
+            self.btn_diag.start(8000)
+            self.usb_timer.start(5000)
+            return
+            
             
 
         self.statBTN.setText("Flashing...")
