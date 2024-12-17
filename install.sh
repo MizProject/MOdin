@@ -104,4 +104,18 @@ while true; do
     esac
 done
 
-echo -e "REMEBER\n\n\n\nPlease run modin to the terminal to run modin"  
+cp -rf variants/modin/ico.png /usr/share/icons/hicolor/scalable/apps/modin.png
+
+cat < EOF > $HOME/.local/share/applications/modin.desktop
+
+[Desktop Entry]
+Type=Application
+Name=MOdin
+Exec=/usr/bin/modin
+Icon=/usr/share/icons/hicolor/scalable/apps/miz.png
+Categories=Utility;
+Keywords=odin;
+Comment=A tool to flash Samsung Devices for linux, also making it user-friendly
+EOF
+
+cp -rf $HOME/.local/share/applications/modin.desktop $HOME/Desktop/modin.desktop
