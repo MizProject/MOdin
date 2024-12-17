@@ -259,6 +259,23 @@ class MainWindow(QMainWindow):
     def flash_device(self):
         self.usb_timer.stop()  # Stop USB detection
         self.btn_diag.stop()
+
+        odin_path = self.where_odin_box.text()
+        if not odin_path:
+            if not os.path.exists(odin_path):
+                QMessageBox.critical(self,
+                                     "Odin4 is not located",
+                                     f"Odin4 was not found\n\nYou point to {odin_path} but it does not exist or the python script is having an issue",
+                                     QMessageBox.Ok)
+            QMessageBox.critical(self,
+                                 'Odin4 exec is empty',
+                                 "Check the Configure tab and set the odin4 Binary",
+                                 QMessageBox.Ok)
+            self.btn_diag.start(8000)
+            self.usb_timer.start(5000)
+            return
+            
+
         self.statBTN.setText("Flashing...")
         self.statBTN.setStyleSheet("""
             QPushButton {
@@ -271,7 +288,7 @@ class MainWindow(QMainWindow):
                 background-color: blue;
             }
         """)
-        command = ["odin4"]
+        command = [odin_path]
         if self.AP_file.text():
             command.extend(["-a", self.AP_file.text()])
         if self.BL_file.text():
