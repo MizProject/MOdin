@@ -25,9 +25,6 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setWindowTitle("MOdin")
-        pixcon = QPixmap('/home/navia/Documents/MOdin/variants/modin/ico.png')
-        resized_pixcon = pixcon.scaled(64, 64, Qt.AspectRatioMode.KeepAspectRatio)
-        self.setWindowIcon(QIcon(resized_pixcon))
         self.about_window_instance = None
 
 
