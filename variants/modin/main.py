@@ -450,7 +450,7 @@ For more info about the licenses, check the license file attached to the project
 
 
     def open_source(self):
-        webbrowser.open("https://github.com/MizProject")
+        webbrowser.open("https://github.com/MizProject/MOdin")
 
 
 if __name__ == "__main__":
