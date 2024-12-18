@@ -41,7 +41,7 @@ while true; do
                             exit 1
                         fi
                     fi
-                    sudo cp variants/modin/main.py /usr/bin/modin
+                    sudo cp variants/modin-qt/main.py /usr/bin/modin
                     echo "MOdin is ready"
                     break
                     ;;
@@ -84,7 +84,7 @@ while true; do
                         echo "Aborting"
                         exit 1
                     fi
-                    sudo cp variants/modin/main.py /usr/bin/modin
+                    sudo cp variants/modin-qt/main.py /usr/bin/modin
                     echo "MOdin is ready"
                     break
                     ;;
@@ -106,7 +106,7 @@ done
 
 sudo cp -rf variants/modin/ico.png /usr/share/icons/hicolor/scalable/apps/modin.png
 
-cat < EOF > $HOME/.local/share/applications/modin.desktop
+cat << EOF > $HOME/.local/share/applications/modin.desktop
 
 [Desktop Entry]
 Type=Application
