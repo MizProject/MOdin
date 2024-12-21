@@ -1,2 +1,4 @@
 .venv
 .tmp
+# This is temporary for now, since gtk variant is not yet ready
+variants/modin-gtk 
