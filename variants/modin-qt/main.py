@@ -16,6 +16,8 @@ import time
 import random
 import webbrowser
 from datetime import date
+import threading
+import asyncio
 
 # PyUSB
 import usb.core
@@ -177,7 +179,7 @@ class MainWindow(QMainWindow):
         # Start checking for USB devices periodically
         self.usb_timer = QTimer(self)
         self.usb_timer.timeout.connect(self.check_usb_devices)
-        self.usb_timer.start(5000)  # Check every 5 seconds
+        self.usb_timer.start(1000)  # Check every second
 
         self.show()
 
@@ -265,7 +267,7 @@ class MainWindow(QMainWindow):
                                  "Please fill up the exec path",
                                  QMessageBox.StandardButton.Close)
             self.btn_diag.start(8000)
-            self.usb_timer.start(5000)
+            self.usb_timer.start(1000)
             return
         if not os.path.basename(odin_path) == "odin4":
             QMessageBox.critical(self,
@@ -273,7 +275,7 @@ class MainWindow(QMainWindow):
                 f"Due to strict measures, this {os.path.basename(odin_path)} from {odin_path} will not be accepted because it may not be odin4\n\nAlthough i'm sure you can fool this tool",
                 QMessageBox.StandardButton.Close)
             self.btn_diag.start(8000)
-            self.usb_timer.start(5000)
+            self.usb_timer.start(1000)
             return
         if not os.path.exists(odin_path):
             QMessageBox.critical(self,
@@ -281,7 +283,7 @@ class MainWindow(QMainWindow):
                 f"Odin4 was not found\n\nYou point to {odin_path} but it does not exist or the python script is having an issue",
                 QMessageBox.StandardButton.Close)
             self.btn_diag.start(8000)
-            self.usb_timer.start(5000)
+            self.usb_timer.start(1000)
             return
         if not os.path.isfile(odin_path):
             QMessageBox.critical(self,
@@ -289,7 +291,7 @@ class MainWindow(QMainWindow):
                 f"{odin_path} is invalid",
                 QMessageBox.StandardButton.Close)
             self.btn_diag.start(8000)
-            self.usb_timer.start(5000)
+            self.usb_timer.start(1000)
             return
             
             
@@ -320,17 +322,42 @@ class MainWindow(QMainWindow):
         if self.nandwipe.isChecked():
             command.append("-e")
 
+        self.run_odin4(command)
+            
+        self.btn_diag.start(8000)
+        self.usb_timer.start(1000)  # Resume USB detection
+
+    async def read_output(self, pipe, output_list, box):
+        while True:
+            line = await pipe.readline()
+            if not line:
+                break
+            line = line.decode().strip()
+            output_list.append(line)
+            box.append(line)
+
+    async def run_odin4_async(self, command):
+        command.append("-e")
+
         if len(command) > 1:  # If at least one file is provided
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            while True:
-                output = process.stdout.readline()
-                if process.poll() is not None:
-                    break
-                if output:
-                    self.box.append(output.strip())
-            error = process.stderr.read()
-            if error:
-                self.box.append("Error:\n" + error.strip())
+            process = await asyncio.create_subprocess_exec(
+                *command,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+
+            stdout_lines = []
+            stderr_lines = []
+
+            await asyncio.gather(
+                self.read_output(process.stdout, stdout_lines, self.box),
+                self.read_output(process.stderr, stderr_lines, self.box)
+            )
+
+            await process.wait()
+
+            if stderr_lines:
+                self.box.append("Error:\n" + "\n".join(stderr_lines))
                 self.statBTN.setText("FAIL")
                 self.statBTN.setStyleSheet("""
                     QPushButton {
@@ -357,15 +384,15 @@ class MainWindow(QMainWindow):
                     background-color: red;
                 }
             """)
-            
-        self.btn_diag.start(8000)
-        self.usb_timer.start(5000)  # Resume USB detection
+
+    def run_odin4(self, command):
+        asyncio.run(self.run_odin4_async(command))
 
     def check_usb_devices(self):
         device = usb.core.find(idVendor=0x04e8)  # Samsung Vendor ID
         if device:
-            if "Download Mode" in usb.util.get_string(device, device.iSerialNumber):
-                # The box and BTN are just for eyecandy
+            sn = usb.util.get_string(device, device.iSerialNumber)
+            if sn is None:
                 self.box.append("Samsung device in Download Mode detected!")
                 self.statBTN.setText("DEVICE IN DOWNLOAD MODE")
                 self.statBTN.setStyleSheet("""
@@ -379,6 +406,22 @@ class MainWindow(QMainWindow):
                         background-color: purple;
                     }
                 """)
+            # For some reason the serial number is not being read so this will be commented out
+            # elif "Download mode" in sn:
+            #     # The box and BTN are just for eyecandy
+            #     self.box.append("Samsung device in Download Mode detected!")
+            #     self.statBTN.setText("DEVICE IN DOWNLOAD MODE")
+            #     self.statBTN.setStyleSheet("""
+            #         QPushButton {
+            #             color: black;
+            #             font-style: bold;
+            #         }
+            #         QPushButton:disabled {
+            #             color: white;
+            #             font-style: bold;
+            #             background-color: purple;
+            #         }
+            #     """)
             else:
                 self.box.append("Samsung device detected, but not in Download Mode.")
 
@@ -410,7 +453,7 @@ class AboutWindow(QMainWindow):
         }                    
         """)
         version_id = QLabel()
-        version_id.setText("v0.1 - @Mizumo-prjkt/MizProject\n\nPyQt6")
+        version_id.setText("v0.1.1 - @Mizumo-prjkt/MizProject\n\nPyQt6")
         version_id.setStyleSheet("""
         QLabel {
             font-family: monospace;
