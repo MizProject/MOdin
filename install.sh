@@ -104,7 +104,8 @@ while true; do
     esac
 done
 
-sudo cp -rf variants/modin/ico.png /usr/share/icons/hicolor/scalable/apps/modin.png
+sudo cp -rf variants/modin-qt/ico.png /usr/share/icons/hicolor/scalable/apps/modin.png
+sudo chmod +x /usr/bin/modin
 
 cat << EOF > $HOME/.local/share/applications/modin.desktop
 
